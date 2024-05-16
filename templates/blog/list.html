@@ -1,0 +1,71 @@
+{% extends 'blog/base.html' %}
+
+{% load static %}
+
+{% block main %}
+
+<!-- Page Header-->
+<header class="masthead" style="background-image: url('{% static 'blog/assets/img/home-bg.jpg' %}')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="site-heading">
+                    <h1>گرگ خاکستری</h1>
+                    <span class="subheading">حامد خسروی | محمدعلی مفیدیان</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content-->
+<div class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+            {% block header %}{% endblock %}
+            
+            {% for post in object_list %}
+            <!-- Post preview-->
+            <div class="post-preview">
+                <a href="{% url 'blog:detail' post.slug %}">
+                    <h2 class="post-title">
+                        {{post.title}}
+                        {% if post.is_special %}
+                            <span class="badge badge-danger" style="font-size: 14px; color: red;">
+                                ویژه
+                            </span>
+                        {% endif %}
+                    </h2>
+                    
+                    <h3 class="post-subtitle">{{post.body|striptags|truncatewords:15}}</h3>
+                </a>
+                <p class="post-meta">
+                    نوشته شده توسط
+                    <a href="{% url 'blog:author' post.author %}">{{post.author.get_full_name}}</a>
+                    {{post.jpublish}}
+                </p>
+                <div>
+                    {% for cat in post.category.active %}
+                    <a href="{% url 'blog:category' cat.slug %}">#{{cat.title}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Divider-->
+            <hr class="my-4" />
+            {% endfor %}
+            <!-- Pager-->
+            {% if is_paginated %}
+                <div class="d-flex justify-content-end mb-4">
+                    {% if page_obj.has_previous %}
+                        <a class="btn btn-primary text-uppercase" href="{% block previous_page_url %}{% endblock %}">&rarr; پست‌های جدید</a>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                        <a class="btn btn-primary text-uppercase" href="{% block next_page_url %}{% endblock %}">پست‌های قدیمی &larr;</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

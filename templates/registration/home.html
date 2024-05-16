@@ -1,0 +1,90 @@
+{% extends 'registration/base.html' %}
+
+{% block title %}{% block title-meta %}لیست مقالات{% endblock %}{% endblock %}
+
+{% block main %}
+<div class="row">
+    <div class="col-12">
+      {% if object_list %}
+        <div class="card">
+          <!-- /.card-header -->
+          <div class="card-body table-responsive p-0">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>عنوان پست</th>
+                  <th>تصویر پست</th>
+                  <th>دسته‌بندی</th>
+                  <th>نویسنده</th>
+                  <th>خلاصه</th>
+                  <th>زمان انتشار</th>
+                  <th>پست ویژه</th>
+                  <th>وضعیت</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for post in object_list %}
+                  <tr>
+                      <td>
+                        {% if post.status == 'b' or post.status == 'd' or user.is_superuser %}
+                          <a href="{% url 'account:post_update' post.pk %}">{{post.title}}</a>
+                        {% else %}
+                          {{post.title}}
+                        {% endif %}
+                      </td>
+                      <td><img src="{{post.thumbnail.url}}" width="120"></td>
+                      <td>{{post.category_to_string}}</td>
+                      <td>{{post.author.get_full_name}}</td>
+                      <td>{{post.description|striptags|truncatewords:15}}</td>
+                      <td>{{post.jpublish}}</td>
+                      <td>
+                        {% if post.is_special %}
+                          <i class="fa fa-check-circle" style="color: green;"></i>
+                        {% else %}
+                          <i class="fa fa-minus-circle" style="color: red;"></i>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if post.status == 'p' %}
+                            <span class="badge badge-success">منتشر شده</span>
+                            <a target="_blank" class="badge badge-primary"
+                            href="{% url 'blog:detail' post.slug %}">
+                            نمایش
+                            </a>
+                        {% elif post.status == 'i' %}
+                            <span class="badge" style="background-color: #32f4df;">در حال بررسی</span>
+                            {% if user.is_superuser %}
+                              <a target="_blank" class="badge badge-secondary"
+                              href="{% url 'blog:preview' post.pk %}">
+                              پیش‌نمایش
+                              </a>
+                            {% endif %}
+                        {% else %}
+                            {% if post.status == 'd' %}
+                              <span class="badge badge-danger">پیش‌نویس شده</span>
+                            {% else %}
+                              <span class="badge badge-warning">برگشت داده شده</span>
+                            {% endif %}
+                            <a target="_blank" class="badge badge-secondary"
+                            href="{% url 'blog:preview' post.pk %}">
+                            پیش‌نمایش
+                            </a>
+                        {% endif %}
+                        {% if user.is_superuser %}
+                          <a class="badge text-danger" href="{% url 'account:post_delete' post.pk %}">حذف</a>
+                        {% endif %}
+                      </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      {% else %}
+        <h3>محتوایی برای نمایش وجود ندارد.</h3>
+      {% endif %}
+    </div>
+  </div>       
+{% endblock %}

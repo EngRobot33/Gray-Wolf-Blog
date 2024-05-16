@@ -1,0 +1,51 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}
+     | {{post.title}}
+{% endblock %}
+
+{% block main %}
+
+<!-- Page Header-->
+<header class="masthead" style="background-image: url('{{post.thumbnail.url}}')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="site-heading">
+                    <h1>{{post.title}}</h1>
+                    <time>{{post.jpublish}}</time>
+                    <br>
+                    {% if post.is_special %}
+                        <span class="badge badge-danger" style="font-size: 14px; color: red;">
+                        ویژه
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content-->
+<article class="mb-4">
+    <div class="container px-4 px-lg-5 text-justify">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                {% if object.is_special %}
+                    {% if user.is_authenticated and user.is_special_user or user == object.author or user.is_superuser %}
+                        {{post.body|safe}}
+                    {% else %}
+                        {{post.body|striptags|truncatewords:15}}
+                        <p class="alert alert-warning">
+                            این مقاله ویژه است و برای مشاهده آن باید <a class="alert-link" href="#">اشتراک ویژه</a> تهیه کنید
+                        </p>
+                    {% endif %}
+                {% else %}
+                    {{post.body|safe}}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</article>
+
+{% endblock %}
